@@ -4,19 +4,14 @@
 #include <vector>
 
 struct ParsedLine{
-    geometry_msgs::Twist t;
     double time;
+    geometry_msgs::Twist twist;
 };
 
 ParsedLine parse_line(const auto &line) {
-    ParsedLine l;
-    l.time << line;
-    l.t.linear.x << line;
-    l.t.linear.y << line;
-    l.t.linear.z << line;
-    l.t.angular.x << line;
-    l.t.angular.y << line;
-    l.t.angular.z << line;
+    ParsedLine line;
+    line >> line.time >> line.twist.linear.x >> line.twist.linear.y >> line.twist.linear.z >>
+        line.twist.angular.x >> line.twist.angular.y >> line.twist.angular.z;
     return l;
 }
 
