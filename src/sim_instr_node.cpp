@@ -8,11 +8,11 @@ struct ParsedLine{
     geometry_msgs::Twist twist;
 };
 
-ParsedLine parse_line(const auto &line) {
+ParsedLine parse_line(const auto &line_in) {
     ParsedLine line;
-    line >> line.time >> line.twist.linear.x >> line.twist.linear.y >> line.twist.linear.z >>
+    line_in >> line.time >> line.twist.linear.x >> line.twist.linear.y >> line.twist.linear.z >>
         line.twist.angular.x >> line.twist.angular.y >> line.twist.angular.z;
-    return l;
+    return line;
 }
 
 auto callback = [auto &pub, auto &twists](auto) {
@@ -20,7 +20,7 @@ auto callback = [auto &pub, auto &twists](auto) {
     twists.pop_back();
 }
 
-void run() {
+void run(int argc, char** argv) {
     ros::init(argc, argv, "sim_instr");
     ros::NodeHandle nh;
     ros::Publisher pub = nh.advertise<Twist>("cmd_vel", 1000);
@@ -30,11 +30,11 @@ void run() {
 
     for(const auto &line : file) {
         ParsedLine pline = parse_line(line);
-        twists.push_back(pline.t);
+        twists.push_back(pline.twist);
         timers.push_back(nh.createTimer(ros::Duration(pline.time), callback, true));
     }
 }
 
 int main(int argc, char** argv) {
-    run();
+    run(argc, argv);
 }
