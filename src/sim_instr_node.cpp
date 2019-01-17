@@ -15,18 +15,19 @@ ParsedLine parse_line(const auto &line_in) {
     return line;
 }
 
-auto callback = [auto &pub, auto &twists](auto) {
-    pub.publish(twists.back());
-    twists.pop_back();
-}
 
 void run(int argc, char** argv) {
     ros::init(argc, argv, "sim_instr");
     ros::NodeHandle nh;
-    ros::Publisher pub = nh.advertise<Twist>("cmd_vel", 1000);
+    ros::Publisher pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
 
     std::vector<geometry_msgs::Twist> twists;
     std::vector<ros::Timer> timers;
+
+    auto callback = [&pub, &twists]() {
+    pub.publish(twists.back());
+    twists.pop_back();
+    };
 
     for(const auto &line : file) {
         ParsedLine pline = parse_line(line);
