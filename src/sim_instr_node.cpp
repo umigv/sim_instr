@@ -4,19 +4,20 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <sstream>
 
 struct ParsedLine{
     double time;
     geometry_msgs::Twist twist;
 };
 
-ParsedLine parse_line(const auto &line_in) {
+ParsedLine parse_line(const std::string &line_in) {
+    std::istringstream line_stream(line_in);
     ParsedLine line;
-    line_in >> line.time >> line.twist.linear.x >> line.twist.linear.y >> line.twist.linear.z >>
+    line_stream >> line.time >> line.twist.linear.x >> line.twist.linear.y >> line.twist.linear.z >>
         line.twist.angular.x >> line.twist.angular.y >> line.twist.angular.z;
     return line;
 }
-
 
 void run(int argc, char** argv) {
     ros::init(argc, argv, "sim_instr");
@@ -34,8 +35,10 @@ void run(int argc, char** argv) {
     pub.publish(twists.back());
     twists.pop_back();
     };
+    while(file) {
+        std::string line;
+        std::getline(file, line);
 
-    for(const auto &line : file) {
         ParsedLine pline = parse_line(line);
         twists.push_back(pline.twist);
         timers.push_back(nh.createTimer(ros::Duration(pline.time), callback, true));
