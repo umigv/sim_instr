@@ -24,7 +24,7 @@ void run(int argc, char** argv) {
     std::vector<geometry_msgs::Twist> twists;
     std::vector<ros::Timer> timers;
 
-    auto callback = [&pub, &twists]() {
+    auto callback = [&pub, &twists](auto) {
     pub.publish(twists.back());
     twists.pop_back();
     };
