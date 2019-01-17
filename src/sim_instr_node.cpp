@@ -2,6 +2,8 @@
 #include "geometry_msgs/Twist.h"
 //#include <node_handle.h>
 #include <vector>
+#include <string>
+#include <fstream>
 
 struct ParsedLine{
     double time;
@@ -20,6 +22,10 @@ void run(int argc, char** argv) {
     ros::init(argc, argv, "sim_instr");
     ros::NodeHandle nh;
     ros::Publisher pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
+
+    std::string filename;
+    nh.getParam("filename", filename);
+    std::ifstream file(filename);
 
     std::vector<geometry_msgs::Twist> twists;
     std::vector<ros::Timer> timers;
